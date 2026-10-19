@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace BluntOTP
 {
-    public class Class1
+    public class OTP
     {
         public static string GenerateTOTP(byte[] key, byte[] time, int digits = 6, string algorithm = "SHA1")
         {
