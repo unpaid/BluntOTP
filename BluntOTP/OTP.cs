@@ -6,6 +6,32 @@ namespace BluntOTP
 {
     public class OTP
     {
+        public static string GenerateTOTP(byte[] key, int period = 30, int digits = 6, string algorithm = "SHA1")
+        {
+            // T is the current Unix time in seconds.
+            long T = DateTimeOffset.Now.ToUniversalTime().ToUnixTimeSeconds();
+
+            // T0 is the epoch as specified in seconds as an offset from Unix
+            // time (e.g. if using Unix time, then T0 is 0).
+            int T0 = 0;
+
+            // TX is the length of one-time duration (default is 30 seconds),
+            // also known as the "time step" (or "period" in terms of the TOTP
+            // URI).
+            int TX = period;
+
+            // CT is the count of the number of durations (TX) between the start
+            // (T0) and now (T).
+            long CT = (T - T0) / TX;
+
+            byte[] CTbytes = new byte[8];
+            BitConverter.GetBytes(CT).CopyTo(CTbytes, 0);
+            if (BitConverter.IsLittleEndian)
+                CTbytes = CTbytes.Reverse().ToArray();
+
+            return GenerateTOTP(key, CTbytes, digits, algorithm);
+        }
+
         public static string GenerateTOTP(byte[] key, byte[] time, int digits = 6, string algorithm = "SHA1")
         {
             // Calculate hash
@@ -16,6 +42,9 @@ namespace BluntOTP
             int Offset = Hash[Hash.Length - 1] & 0xF;
             byte[] Truncated = new byte[4];
             Buffer.BlockCopy(Hash, Offset, Truncated, 0, Truncated.Length);
+            // We treat the dynamic binary code as a 31-bit, unsigned,
+            // big-endian integer; the first byte is masked with a 0x7f.
+            Truncated[0] = (byte)(Truncated[0] & 0x7F);
 
             // Convert our bytes to a string; transform to match desired digits
             if (BitConverter.IsLittleEndian)
