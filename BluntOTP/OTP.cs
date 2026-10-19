@@ -8,8 +8,13 @@ namespace BluntOTP
     {
         public static string GenerateTOTP(byte[] key, int period = 30, int digits = 6, string algorithm = "SHA1")
         {
+            return GenerateTOTP(key, DateTimeOffset.Now.ToUniversalTime().ToUnixTimeSeconds(), period, digits, algorithm);
+        }
+
+        public static string GenerateTOTP(byte[] key, long time, int period = 30, int digits = 6, string algorithm = "SHA1")
+        {
             // T is the current Unix time in seconds.
-            long T = DateTimeOffset.Now.ToUniversalTime().ToUnixTimeSeconds();
+            long T = time;
 
             // T0 is the epoch as specified in seconds as an offset from Unix
             // time (e.g. if using Unix time, then T0 is 0).
@@ -75,7 +80,7 @@ namespace BluntOTP
                     using (HMACSHA256 HMAC = new HMACSHA256(key))
                         return HMAC.ComputeHash(data);
                 case "SHA512":
-                    using (HMACSHA256 HMAC = new HMACSHA256(key))
+                    using (HMACSHA512 HMAC = new HMACSHA512(key))
                         return HMAC.ComputeHash(data);
             }
         }
