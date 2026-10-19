@@ -1,9 +1,34 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace BluntOTP
 {
     public class Class1
     {
+        public static string GenerateTOTP(byte[] key, byte[] time, int digits = 6, string algorithm = "SHA1")
+        {
+            // Calculate hash
+            byte[] Hash = HMACSHA(key, time, algorithm);
+
+            // Truncate hash to 4 bytes using the low-order half of the last
+            // byte as an offset
+            int Offset = Hash[Hash.Length - 1] & 0xF;
+            byte[] Truncated = new byte[4];
+            Buffer.BlockCopy(Hash, Offset, Truncated, 0, Truncated.Length);
+
+            // Convert our bytes to a string; transform to match desired digits
+            if (BitConverter.IsLittleEndian)
+                Truncated = Truncated.Reverse().ToArray();
+            string Result = BitConverter.ToInt32(Truncated, 0).ToString();
+            if (Result.Length > digits)
+                Result = Result.Substring(Result.Length - digits);
+            else if (Result.Length < digits)
+                Result = Result.PadLeft(digits, '0');
+
+            return Result;
+        }
+
         public static byte[] HMACSHA(byte[] key, byte[] data, string algorithm = "SHA1")
         {
             // The HMAC class does have a `Create` initializer that takes an

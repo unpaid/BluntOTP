@@ -2,7 +2,6 @@
 
   <PropertyGroup>
 	  <TargetFrameworks>
-		  net20;
 		  net451;
 		  net452;
 		  net46;
