@@ -26,6 +26,7 @@ namespace BluntOTP
         public static string Encode(byte[] data)
         {
             StringBuilder Result = new StringBuilder();
+
             for (int CHUNK_INDEX = 0; CHUNK_INDEX < Math.Ceiling((double)data.Length / CHUNK_SIZE_BYTES); CHUNK_INDEX++)
             {
                 long Chunk = 0;
@@ -38,7 +39,7 @@ namespace BluntOTP
                 }
 
                 char[] Chars = new char[CHUNK_SIZE_CHARS];
-                for (int CHAR_INDEX = 0; CHAR_INDEX < Chars.Length; CHAR_INDEX++)
+                for (int CHAR_INDEX = 0; CHAR_INDEX < CHUNK_SIZE_CHARS; CHAR_INDEX++)
                 {
                     Chars[CHAR_INDEX] = ALPHABET[(int)(Chunk >> (CHAR_INDEX * CHAR_SIZE_BITS)) & (ALPHABET.Length - 1)];
                 }
@@ -55,6 +56,37 @@ namespace BluntOTP
             }
 
             return Result.ToString();
+        }
+
+        public static byte[] Decode(string data)
+        {
+            char[] Chars = data.TrimEnd(PADDING).ToCharArray();
+
+            byte[] Result = new byte[(int)Math.Floor((double)Chars.Length * CHAR_SIZE_BITS / BYTE_SIZE_BITS)];
+
+            for (int CHUNK_INDEX = 0; CHUNK_INDEX < Math.Ceiling((double)Chars.Length / CHUNK_SIZE_CHARS); CHUNK_INDEX++)
+            {
+                long Chunk = 0;
+                for (int CHAR_INDEX = 0; CHAR_INDEX < CHUNK_SIZE_CHARS; CHAR_INDEX++)
+                {
+                    if (Chars.Length > CHUNK_INDEX * CHUNK_SIZE_CHARS + CHAR_INDEX)
+                        Chunk = (Chunk << CHAR_SIZE_BITS) + (byte)Array.IndexOf(ALPHABET, Chars[CHUNK_INDEX * CHUNK_SIZE_CHARS + CHAR_INDEX]);
+                    else
+                        Chunk = (Chunk << CHAR_SIZE_BITS);
+                }
+
+                byte[] Bytes = new byte[CHUNK_SIZE_BYTES];
+                for (int BYTE_INDEX = 0; BYTE_INDEX < CHUNK_SIZE_BYTES; BYTE_INDEX++)
+                {
+                    Bytes[BYTE_INDEX] = (byte)((Chunk >> (BYTE_INDEX * BYTE_SIZE_BITS)) & Byte.MaxValue);
+                }
+                if (BitConverter.IsLittleEndian)
+                    Bytes = Bytes.Reverse().ToArray();
+
+                Buffer.BlockCopy(Bytes, 0, Result, CHUNK_INDEX * CHUNK_SIZE_BYTES, Math.Min(CHUNK_SIZE_BYTES, Result.Length - (CHUNK_INDEX * CHUNK_SIZE_BYTES)));
+            }
+
+            return Result;
         }
 
         private static int GreatestCommonDivisor(int a, int b)
