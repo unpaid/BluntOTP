@@ -44,7 +44,7 @@ namespace BluntOTP
                     Chars[CHAR_INDEX] = ALPHABET[(int)(Chunk >> (CHAR_INDEX * CHAR_SIZE_BITS)) & (ALPHABET.Length - 1)];
                 }
                 if (BitConverter.IsLittleEndian)
-                    Chars = Chars.Reverse().ToArray();
+                    Array.Reverse(Chars);
 
                 string Encoded = new string(Chars);
                 if (data.Length - (CHUNK_INDEX * CHAR_SIZE_BITS) < CHAR_SIZE_BITS)
@@ -81,7 +81,7 @@ namespace BluntOTP
                     Bytes[BYTE_INDEX] = (byte)((Chunk >> (BYTE_INDEX * BYTE_SIZE_BITS)) & Byte.MaxValue);
                 }
                 if (BitConverter.IsLittleEndian)
-                    Bytes = Bytes.Reverse().ToArray();
+                    Array.Reverse(Bytes);
 
                 Buffer.BlockCopy(Bytes, 0, Result, CHUNK_INDEX * CHUNK_SIZE_BYTES, Math.Min(CHUNK_SIZE_BYTES, Result.Length - (CHUNK_INDEX * CHUNK_SIZE_BYTES)));
             }

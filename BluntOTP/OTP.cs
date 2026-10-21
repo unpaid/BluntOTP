@@ -32,7 +32,7 @@ namespace BluntOTP
             byte[] CTbytes = new byte[8];
             BitConverter.GetBytes(CT).CopyTo(CTbytes, 0);
             if (BitConverter.IsLittleEndian)
-                CTbytes = CTbytes.Reverse().ToArray();
+                Array.Reverse(CTbytes);
 
             return GenerateTOTP(key, CTbytes, digits, algorithm);
         }
@@ -53,7 +53,7 @@ namespace BluntOTP
 
             // Convert our bytes to a string; transform to match desired digits
             if (BitConverter.IsLittleEndian)
-                Truncated = Truncated.Reverse().ToArray();
+                Array.Reverse(Truncated);
             string Result = BitConverter.ToInt32(Truncated, 0).ToString();
             if (Result.Length > digits)
                 Result = Result.Substring(Result.Length - digits);
