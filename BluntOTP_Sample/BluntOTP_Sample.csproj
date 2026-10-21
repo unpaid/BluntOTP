@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>false</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BluntOTP">
+      <HintPath>..\BluntOTP\bin\Debug\net8.0\BluntOTP.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

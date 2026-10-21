@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.37806.7 d17.14
+VisualStudioVersion = 17.14.37806.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluntOTP", "BluntOTP\BluntOTP.csproj", "{34720172-A318-4F2B-B996-3832CC2AD579}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluntOTP_Sample", "BluntOTP_Sample\BluntOTP_Sample.csproj", "{1B7278F1-F6FB-4B5B-A61F-93326B6FDCAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{34720172-A318-4F2B-B996-3832CC2AD579}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34720172-A318-4F2B-B996-3832CC2AD579}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34720172-A318-4F2B-B996-3832CC2AD579}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B7278F1-F6FB-4B5B-A61F-93326B6FDCAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7278F1-F6FB-4B5B-A61F-93326B6FDCAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B7278F1-F6FB-4B5B-A61F-93326B6FDCAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7278F1-F6FB-4B5B-A61F-93326B6FDCAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
