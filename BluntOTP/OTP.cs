@@ -34,13 +34,22 @@ namespace BluntOTP
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(CTbytes);
 
-            return GenerateTOTP(key, CTbytes, digits, algorithm);
+            return GenerateOTP(key, CTbytes, digits, algorithm);
         }
 
-        public static string GenerateTOTP(byte[] key, byte[] time, int digits = 6, string algorithm = "SHA1")
+        public static string GenerateHOTP(byte[] key, long counter, int digits = 6, string algorithm = "SHA1")
+        {
+            byte[] C = BitConverter.GetBytes(counter);
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(C);
+
+            return GenerateOTP(key, C, digits, algorithm);
+        }
+
+        public static string GenerateOTP(byte[] key, byte[] data, int digits = 6, string algorithm = "SHA1")
         {
             // Calculate hash
-            byte[] Hash = HMACSHA(key, time, algorithm);
+            byte[] Hash = HMACSHA(key, data, algorithm);
 
             // Truncate hash to 4 bytes using the low-order half of the last
             // byte as an offset
