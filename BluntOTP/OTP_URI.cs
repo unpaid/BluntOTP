@@ -43,27 +43,27 @@ namespace BluntOTP
             }
         }
 
-        public string Digits
+        public int Digits
         {
             get
             {
-                return Parameters["digits"];
+                return Convert.ToInt32(Parameters["digits"]);
             }
         }
 
-        public string Period
+        public int Period
         {
             get
             {
-                return Parameters["period"];
+                return Convert.ToInt32(Parameters["period"]);
             }
         }
 
-        public string Counter
+        public long Counter
         {
             get
             {
-                return Parameters["counter"];
+                return Convert.ToInt32(Parameters["counter"]);
             }
         }
 
@@ -144,10 +144,10 @@ namespace BluntOTP
             }
 
             // digits is OPTIONAL. If absent, the default is 6.
-            if (!String.IsNullOrEmpty(Digits) &&
+            if (!String.IsNullOrEmpty(Parameters["digits"]) &&
                // Valid digits values are 6 and 8.
-               (!Digits.Equals("6", StringComparison.InvariantCultureIgnoreCase) &&
-                !Digits.Equals("8", StringComparison.InvariantCultureIgnoreCase)))
+               (Digits < 6 ||
+                Digits > 8))
             {
                 // If a consumer receives an unsupported digits value, it SHOULD
                 // reject the URI.
@@ -155,16 +155,16 @@ namespace BluntOTP
             }
 
             // period is OPTIONAL for totp. If absent, the default is 30.
-            if ((!String.IsNullOrEmpty(Period) && Type.Equals("totp", StringComparison.InvariantCultureIgnoreCase)) &&
-               (!Period.Equals("15", StringComparison.InvariantCultureIgnoreCase) &&
-                !Period.Equals("30", StringComparison.InvariantCultureIgnoreCase) &&
-                !Period.Equals("60", StringComparison.InvariantCultureIgnoreCase)))
+            if ((!String.IsNullOrEmpty(Parameters["period"]) && Type.Equals("totp", StringComparison.InvariantCultureIgnoreCase)) &&
+               (Period != 15 &&
+                Period != 30 &&
+                Period != 60))
             {
                 return false;
             }
 
             // counter is REQUIRED for hotp and MUST be ignored for totp.
-            if (Type.Equals("hotp", StringComparison.InvariantCultureIgnoreCase) && String.IsNullOrEmpty(Counter))
+            if (Type.Equals("hotp", StringComparison.InvariantCultureIgnoreCase) && String.IsNullOrEmpty(Parameters["counter"]))
             {
                 return false;
             }
