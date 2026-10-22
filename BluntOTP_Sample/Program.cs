@@ -6,6 +6,55 @@ namespace BluntOTP_Sample
     {
         static void Main(string[] args)
         {
+            string[] testURI = new string[]
+            {
+                "otpauth://hotp/aboutinfosec.com:melon.ask?issuer=aboutinfosec.com&secret=S7OOPXNAMLWTDF6N7HAC3BJJTEJJQLZ3&algorithm=SHA1&digits=6&counter=10",
+                "otpauth://totp/ACME%20Co:john.doe@email.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME%20Co&algorithm=SHA1&digits=6&period=30",
+                "otpauth://totp/otpauth%20demo:username%40example.org?secret=AAAABBBB22223333YYYYZZZZ66667777&issuer=otpauth.dev",
+                "otpauth://totp/Example%3Aalice?secret=PB4XU&issuer=example.com",
+                "otpauth://hotp/Example?secret=PB4XU&counter=42&issuer=example.com",
+                "otpauth://totp/ietfuser?secret=NBSWY3DPFQQHO33SNRSAU",
+                "otpauth://hotp/13tfus3r?secret=NBSWY3DP&counter=192",
+            };
+
+            for (int i = 0; i < testURI.Length; i++)
+            {
+                var URI = BluntOTP.OTP_URI.Parse(testURI[i]);
+                if (URI.IsValid())
+                {
+                    Console.WriteLine($"{URI.Account}{(!String.IsNullOrEmpty(URI.Issuer_Label) ? $"@{URI.Issuer_Label}" : String.Empty)}{(!String.IsNullOrEmpty(URI.Issuer_Parameter) ? $" ({URI.Issuer_Parameter})" : String.Empty)}");
+                    Console.WriteLine($"\tType: {URI.Type}");
+                    if (URI.Digits > 0)
+                        Console.WriteLine($"\tDigits: {URI.Digits}");
+                    if (!String.IsNullOrEmpty(URI.Algorithm))
+                        Console.WriteLine($"\tAlgorithm: {URI.Algorithm}");
+                    Console.WriteLine($"\tSecret (Base32): {URI.Secret}");
+                    var secret = BluntOTP.Base32.Decode(URI.Secret);
+                    if (URI.Type.Equals("hotp", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Console.WriteLine($"\tCounter: {URI.Counter}");
+                        Console.WriteLine($"\tCode: {BluntOTP.OTP.GenerateHOTP(secret, URI.Counter,
+                            URI.Digits > 0 ? URI.Digits : 6,
+                            !String.IsNullOrEmpty(URI.Algorithm) ? URI.Algorithm : "SHA1")}");
+                    }
+                    else if (URI.Type.Equals("totp", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        if (URI.Period > 0)
+                            Console.WriteLine($"\tPeriod: {URI.Period}");
+                        Console.WriteLine($"\tTime: {DateTimeOffset.Now.ToUniversalTime().ToUnixTimeSeconds()}");
+                        Console.WriteLine($"\tCode: {BluntOTP.OTP.GenerateTOTP(secret,
+                            URI.Period > 0 ? URI.Period : 30,
+                            URI.Digits > 0 ? URI.Digits : 6,
+                            !String.IsNullOrEmpty(URI.Algorithm) ? URI.Algorithm : "SHA1")}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid OTP URI: {testURI[i]}");
+                }
+                Console.WriteLine();
+            }
+
             // Seed for HMAC-SHA1 - 20 bytes
             string Seed = "3132333435363738393031323334353637383930";
 
