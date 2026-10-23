@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace BluntOTP
@@ -23,6 +24,10 @@ namespace BluntOTP
             {
                 return Parameters["secret"];
             }
+            set
+            {
+                Parameters["secret"] = value;
+            }
         }
 
         // The issuer parameter (issuer) is the canonical identifier for account
@@ -33,6 +38,10 @@ namespace BluntOTP
             {
                 return Parameters["issuer"];
             }
+            set
+            {
+                Parameters["issuer"] = value;
+            }
         }
 
         public string Algorithm
@@ -40,6 +49,10 @@ namespace BluntOTP
             get
             {
                 return Parameters["algorithm"];
+            }
+            set
+            {
+                Parameters["algorithm"] = value;
             }
         }
 
@@ -49,6 +62,10 @@ namespace BluntOTP
             {
                 return Convert.ToInt32(Parameters["digits"]);
             }
+            set
+            {
+                Parameters["digits"] = value.ToString();
+            }
         }
 
         public int Period
@@ -56,6 +73,10 @@ namespace BluntOTP
             get
             {
                 return Convert.ToInt32(Parameters["period"]);
+            }
+            set
+            {
+                Parameters["period"] = value.ToString();
             }
         }
 
@@ -65,6 +86,32 @@ namespace BluntOTP
             {
                 return Convert.ToInt32(Parameters["counter"]);
             }
+            set
+            {
+                Parameters["counter"] = value.ToString();
+            }
+        }
+
+        public string Serialize()
+        {
+            // otpauth://<type>/<label>?<parameters>
+            StringBuilder SB = new StringBuilder();
+
+            SB.Append($"{Scheme.ToLowerInvariant()}://");
+            SB.Append($"{Type.ToLowerInvariant()}/");
+            if (!String.IsNullOrEmpty(Issuer_Label))
+                SB.Append($"{Issuer_Label}:");
+            SB.Append($"{Account}");
+            // It is possible to just call Parameters.ToString which will encode
+            // this as a query string, but it will use '+' instead of '%20' for
+            // spaces. Although our `Parse` method can handle this, it may not
+            // be widely supported.
+            string QueryString = String.Join("&", Parameters.AllKeys.Select(Key => $"{Key}={Parameters[Key]}"));
+            SB.Append($"?{QueryString}");
+
+            // Could also encode ':'->'%3A' and '@'->'%40', but it doesn't seem
+            // necessary.
+            return SB.ToString().Replace(" ", "%20");
         }
 
         public static OTP_URI Parse(string input)
