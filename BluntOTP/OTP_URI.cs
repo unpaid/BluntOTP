@@ -92,6 +92,14 @@ namespace BluntOTP
             }
         }
 
+        public OTP_URI()
+        {
+            Parameters = new NameValueCollection();
+            Scheme = "otpauth";
+            Algorithm = "SHA1";
+            Digits = 6;
+        }
+
         public string Serialize()
         {
             // otpauth://<type>/<label>?<parameters>
