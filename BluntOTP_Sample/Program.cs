@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BluntOTP_Sample
 {
@@ -6,7 +7,7 @@ namespace BluntOTP_Sample
     {
         static void Main(string[] args)
         {
-            string[] testURI = new string[]
+            List<string> testURI = new List<string>
             {
                 "otpauth://hotp/aboutinfosec.com:melon.ask?issuer=aboutinfosec.com&secret=S7OOPXNAMLWTDF6N7HAC3BJJTEJJQLZ3&algorithm=SHA1&digits=6&counter=10",
                 "otpauth://totp/ACME%20Co:john.doe@email.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME%20Co&algorithm=SHA1&digits=6&period=30",
@@ -17,12 +18,26 @@ namespace BluntOTP_Sample
                 "otpauth://hotp/13tfus3r?secret=NBSWY3DP&counter=192",
             };
 
-            for (int i = 0; i < testURI.Length; i++)
+            BluntOTP.OTP_URI example = new BluntOTP.OTP_URI();
+            example.Type = "hotp";
+            example.Issuer_Label = "BluntOTP";
+            example.Account = "example@domain.tld";
+            example.Issuer_Parameter = "https://github.com/unpaid/BluntOTP";
+            example.Secret = "ABCDEFGH";
+            example.Counter = 67;
+
+            string exampleURI = example.Serialize();
+            Console.WriteLine($"Example OTP URI: {exampleURI}");
+            Console.WriteLine();
+
+            testURI.Add( exampleURI );
+
+            for (int i = 0; i < testURI.Count; i++)
             {
                 var URI = BluntOTP.OTP_URI.Parse(testURI[i]);
                 if (URI.IsValid())
                 {
-                    Console.WriteLine($"{URI.Account}{(!String.IsNullOrEmpty(URI.Issuer_Label) ? $"@{URI.Issuer_Label}" : String.Empty)}{(!String.IsNullOrEmpty(URI.Issuer_Parameter) ? $" ({URI.Issuer_Parameter})" : String.Empty)}");
+                    Console.WriteLine($"{URI.Account}{(!String.IsNullOrEmpty(URI.Issuer_Label) ? $" - {URI.Issuer_Label}" : String.Empty)}{(!String.IsNullOrEmpty(URI.Issuer_Parameter) ? $" ({URI.Issuer_Parameter})" : String.Empty)}");
                     Console.WriteLine($"\tType: {URI.Type}");
                     if (URI.Digits > 0)
                         Console.WriteLine($"\tDigits: {URI.Digits}");
